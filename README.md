@@ -14,3 +14,6 @@ To try and just get an all black window popup:
 c3c run main
 ```   
 or `c3c run`
+
+> [!IMPORTANT]  
+> This isn't finished just yet. Give me some time!
