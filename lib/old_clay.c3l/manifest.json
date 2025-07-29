@@ -1,0 +1,22 @@
+{ 
+  "provides" : "old_clay",
+  "c-sources":["csource/clay.c"],
+  "dependencies" : ["raylib55"],
+  "cflags": "-DCLAY_IMPLEMENTATION",
+  "sources": ["clay.c3", "clay-raylib-renderer.c3"],
+  "targets" : {
+    "macos-x64" : {
+    },
+    "macos-aarch64" : {
+    },
+    "linux-x64" : {
+    },
+    "freebsd-x64" : {
+    },
+	"windows-x64" : {
+      "wincrt": "none",
+	},
+    "wasm32" : {
+    }
+  }
+}

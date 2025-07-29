@@ -1,0 +1,32 @@
+{
+  "langrev": "6.6",
+  "authors":  [ "Jefferey Schlueter <jefferey.l.schlueter@gmail.com>" ],
+  "version": "0.1.0",
+  "dependency-search-paths":  [ "lib" ], // has to be out here for vendor-fetch to put it in the right place
+  "cc": "gcc",
+  "targets": {
+    // TODO: compiling with clang gives "-fPic" not valid commands for windows target
+    "main": {
+      "output": "build/main",
+      "dependencies":  [ "raylib55", "clay" ],
+      "sources": [ "src/main.c3" ],
+      "type": "executable",
+      // "true": "full"
+    },
+    "new-example": {
+      "output": "build/new-example/",
+      "dependencies":  [ "raylib55", "clay" ],
+      "type": "executable",
+      "sources": [ "src/updated-video-example.c3" ],
+    },
+    "old-example": {
+      "dependencies":  [ "raylib55", "old_clay" ],
+      "output": "build/old-example/",
+      "type": "executable",
+      "sources": [ "src/video-example.c3" ],
+    }
+
+  },
+
+  "cpu": "generic"
+}
