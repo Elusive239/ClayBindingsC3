@@ -833,7 +833,7 @@ struct Slice {
 }
 
 fn ElementType* Slice.get(
-    Slice{ElementType}* slice,
+    Slice* slice,
     int index
   ) {
     if(clay::array_RangeCheck(index, slice.length)) return &(slice.internalArray[index]) ;
