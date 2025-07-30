@@ -20,7 +20,7 @@ macro borderAll(widthValue) => {widthValue, widthValue, widthValue, widthValue, 
 
 macro CornerRadius cornerRadius(radius) => {radius, radius, radius, radius};
 
-macro Padding paddingAll(padding) => {padding, padding, padding, padding};
+macro Padding paddingAll(ushort padding) => {padding, padding, padding, padding};
 
 macro SizingAxis sizingFit(...) {
   return { .size = { .minMax = { $vasplat } }, .type = SizingType.FIT };
@@ -54,30 +54,16 @@ macro sidLocal(ClayString label, index) => clay::hashString(label, getParentElem
 macro idiLocal(String label, index) => clay::sidiLocal(clay::string(label), index);
 macro sidiLocal(ClayString label, index) => clay::hashStringWithOffset(label, index, getParentElementId());
 
-
-// #define CLAY__STRING_LENGTH(s) ((sizeof(s) / sizeof((s)[0])) - sizeof((s)[0]))
-
-// #define CLAY__ENSURE_STRING_LITERAL(x) ("" x "")
-
-// BELOW COMMENT IS NOT ACCURATE WITH C3!
-// Note: If an error led you here, it's because CLAY_STRING can only be used with string literals, i.e. CLAY_STRING("SomeString") and not CLAY_STRING(yourString)
-
 macro ClayString string(string) {
-  return {
-    .isStaticallyAllocated = true,
-    .length = string.len,
-    .chars = (ZString) string.ptr
-  };
+  $switch $typeof(string).typeid :
+    $case String.typeid:      return { .isStaticallyAllocated = true, .length = string.len,   .chars = (ZString) string.ptr };
+    $case ZString.typeid:     return { .isStaticallyAllocated = true, .length = string.len(), .chars = string };
+    //Dstring *arent* typically statically allocated, but we dont want clay to try and yeet it.
+    $case DString.typeid:     return { .isStaticallyAllocated = true, .length = string.len(), .chars = (ZString) &string.str_view()[0] };
+    $case ClayString.typeid:  return { .isStaticallyAllocated = true, .length = string.length,.chars = string.chars};
+    $default : unreachable("Unsupported string type for clay::string.");
+  $endswitch
 }
-
-// #define CLAY_STRING_CONST(string) { .isStaticallyAllocated = true, .length = CLAY__STRING_LENGTH(CLAY__ENSURE_STRING_LITERAL(string)), .chars = (string) }
-
-// macro void @clay(...; @body()) @builtin { 
-//   clay::openElement();
-//   configureOpenElement( (ElementDeclaration) {$vasplat});
-//   @body();
-//   clay::closeElement();
-// }
 
 macro void @clay(ElementDeclaration decl; @body()) @builtin { 
   clay::openElement();
@@ -117,9 +103,13 @@ macro layout(LayoutConfig config) {
 
 // macro scroll(ScrollElementConfig config) { clay::attachElementConfig({ .scrollElementConfig = clay::storeScrollElementConfig(config) }, clay::ELEMENT_CONFIG_TYPE_SCROLL_CONTAINER ); }
 
-macro floating(FloatingElementConfig config) { clay::attachElementConfig({ .floatingElementConfig = clay::storeFloatingElementConfig(config) }, clay::ELEMENT_CONFIG_TYPE_FLOATING_CONTAINER ); }
+macro floating(FloatingElementConfig config) { 
+  return *clay::storeFloatingElementConfig(config);
+}
 
-macro borderRadiusUni(uint width, ClayColor color, float cornerRadius = 0) { clay::attachElementConfig({ .borderElementConfig = clay::storeBorderElementConfig({ .left = { width, color }, .right = { width, color }, .top = { width, color }, .bottom = { width, color }, .cornerRadius = {cornerRadius, cornerRadius, cornerRadius, cornerRadius}})}, clay::ELEMENT_CONFIG_TYPE_BORDER_CONTAINER); }
+macro borderRadiusUni(uint width, ClayColor color, float cornerRadius = 0) { 
+  return clay::attachElementConfig(
+    { .borderElementConfig = clay::storeBorderElementConfig({ .left = { width, color }, .right = { width, color }, .top = { width, color }, .bottom = { width, color }, .cornerRadius = {cornerRadius, cornerRadius, cornerRadius, cornerRadius}})}, clay::ELEMENT_CONFIG_TYPE_BORDER_CONTAINER); }
 
 macro TextElementConfig* textConfig(TextElementConfig config) { return clay::storeTextElementConfig(config); }
 
@@ -559,17 +549,27 @@ struct SharedElementConfig {
 }
 
 // ElementConfigType
-enum ElementConfigType : char @export{
-    NONE,
-    BORDER,
-    FLOATING,
-    CLIP,
-    ASPECT,
-    IMAGE,
-    TEXT,
-    CUSTOM,
-    SHARED,
-} 
+// enum ElementConfigType : (inline char) @export{
+//     NONE,
+//     BORDER,
+//     FLOATING,
+//     CLIP,
+//     ASPECT,
+//     IMAGE,
+//     TEXT,
+//     CUSTOM,
+//     SHARED,
+// } 
+typedef ElementConfigType                                       = char;
+const ElementConfigType ELEMENT_CONFIG_TYPE_NONE                = 0;
+const ElementConfigType ELEMENT_CONFIG_TYPE_BORDER              = 1;
+const ElementConfigType ELEMENT_CONFIG_TYPE_FLOATING            = 2;
+const ElementConfigType ELEMENT_CONFIG_TYPE_CLIP                = 4;
+const ElementConfigType ELEMENT_CONFIG_TYPE_ASPECT              = 8;
+const ElementConfigType ELEMENT_CONFIG_TYPE_IMAGE               = 16;
+const ElementConfigType ELEMENT_CONFIG_TYPE_TEXT                = 32;
+const ElementConfigType ELEMENT_CONFIG_TYPE_CUSTOM              = 64;
+const ElementConfigType ELEMENT_CONFIG_TYPE_SHARED              = 128;
 
 //  ElementConfigUnion (union of pointers)
 union ElementConfigUnion{
@@ -917,6 +917,14 @@ struct Array {
     int length;
     ElementType *data;
 }
+
+// fn ElementType* Array.get(
+//     Array* array,
+//     int index
+//   ) @if(!$defined(Array.get)) {
+//     if(clay::array_RangeCheck(index, slice.length)) return &(array.internalArray[index]) ;
+//     return {};
+// }
 
 struct Slice {
   CInt length;

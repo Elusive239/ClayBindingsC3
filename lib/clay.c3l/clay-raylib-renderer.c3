@@ -478,3 +478,22 @@ fn void raylibRender(RenderCommandArray renderCommands)
         }
     }
 }
+
+fn void raylibInitialize(int width, int height, char *title, uint flags) {
+    rl::setConfigFlags( (ConfigFlag) flags);
+    rl::initWindow(width, height, title);
+}
+
+// A MALLOC'd buffer, that we keep modifying inorder to save from so many Malloc and Free Calls.
+// Call Clay_Raylib_Close() to free
+char *temp_render_buffer = null;
+int temp_render_buffer_len = 0;
+
+// Call after closing the window to clean up the render buffer
+fn void raylibClose()
+{
+    if(temp_render_buffer) free(temp_render_buffer);
+    temp_render_buffer_len = 0;
+
+    rl::closeWindow();
+}
