@@ -51,7 +51,6 @@ fn void main()
         clay::beginLayout();
 		//
 		RenderCommandArray renderCommands = clay::endLayout();
-        
 
         rl::beginDrawing();
         rl::clearBackground(rl::BLACK);

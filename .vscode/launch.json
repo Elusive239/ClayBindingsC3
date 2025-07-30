@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debuffer for C3",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/new-example/new-example",
+            "args":[],
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "console": "integratedTerminal",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing"
+                }
+            ],
+            "preLaunchTask": "c3cbuild"
+        }
+    ]
+}

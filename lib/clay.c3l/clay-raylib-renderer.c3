@@ -314,33 +314,45 @@ fn Ray getScreenToWorldPointWithZDistance(Vector2 position, Camera camera, int s
 // fn Dimensions( 
 //   ClayStringSlice text, 
 // TextElementConfig *config, void *userData);
-fn Dimensions raylibMeasureText(ClayStringSlice *text, TextElementConfig *config, void* userData)
+import std::io;
+fn Dimensions raylibMeasureText(ClayStringSlice text, TextElementConfig *config, void* userData)
 {
     // Measure string size for Font
     Dimensions textSize = { 0, 0 };
 
     float maxTextWidth = 0.0f;
     float lineTextWidth = 0;
+    int maxLineCharCount = 0;
+    int lineCharCount = 0;
 
     float textHeight = config.fontSize;
     Font fontToUse = raylibFonts[config.fontId].font;
+    if(!fontToUse.glyphs){
+        fontToUse = rl::getFontDefault();
+    }
     float scaleFactor = config.fontSize/(float)fontToUse.baseSize;
-
-    for (int i = 0; i < text.length; ++i)
+    for (int i = 0; i < text.length; ++i, lineCharCount++)
     {
         if (text.chars[i] == '\n') {
             maxTextWidth = $$max(maxTextWidth, lineTextWidth);
+            maxLineCharCount = clay::max(maxLineCharCount, lineCharCount);
             lineTextWidth = 0;
+            lineCharCount= 0;
             continue;
         }
         int index = text.chars[i] - 32;
-        if (fontToUse.glyphs[index].advanceX != 0) {lineTextWidth += fontToUse.glyphs[index].advanceX;}
-        else {lineTextWidth += (fontToUse.recs[index].width + fontToUse.glyphs[index].offsetX);}
+        if (fontToUse.glyphs[index].advanceX != 0) {
+            lineTextWidth += fontToUse.glyphs[index].advanceX;
+        }
+        else {
+            lineTextWidth += (fontToUse.recs[index].width + fontToUse.glyphs[index].offsetX);
+        }
     }
 
     maxTextWidth = $$max(maxTextWidth, lineTextWidth);
+    maxLineCharCount = clay::max(maxLineCharCount, lineCharCount);
 
-    textSize.width = maxTextWidth * scaleFactor;
+    textSize.width = maxTextWidth * scaleFactor + (float)(lineCharCount*config.letterSpacing);
     textSize.height = textHeight;
 
     return textSize;

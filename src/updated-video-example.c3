@@ -12,7 +12,8 @@ fn void errorHandler(ErrorData errorData)
 
 fn void renderDropdownMenuItem(String text) {
     @clay(
-        clay::layout({ .padding = clay::paddingUni(16)})
+        {}
+        // clay::layout({ .padding = clay::paddingUni(16)})
     ) {
         clay::text(
             text, clay::textConfig({
@@ -24,12 +25,11 @@ fn void renderDropdownMenuItem(String text) {
 }
 
 fn void renderHeaderButton(String text) {
-    @clay(
-        clay::layout({ .padding = { 16, 16, 8, 8 }}),
-        clay::rectangle({
-            .color = { 140, 140, 140, 255 },
+    @clay({
+        // clay::layout({ .padding = { 16, 16, 8, 8 }}),
+            .backgroundColor = { 140, 140, 140, 255 },
             .cornerRadius = clay::cornerRadiusUni(5)
-        })
+        }
     ) {
         clay::text(text, clay::textConfig({
             .textColor = { 255, 255, 255, 255 },
@@ -77,11 +77,11 @@ fn void main() @public
     defer rl::closeWindow();
 
     uint clayRequiredMemory = clay::minMemorySize();
-    Arena clayMemory = clay::createArena(clayRequiredMemory, malloc(clayRequiredMemory));
-    clay::initialize(clayMemory, { rl::getScreenWidth(), rl::getScreenHeight() }, { &errorHandler, 0 });
+    Arena clayMemory = clay::createArenaWithCapacityAndMemory(clayRequiredMemory, malloc(clayRequiredMemory));
+    clay::initialize(clayMemory, { rl::getScreenWidth(), rl::getScreenHeight() }, { &errorHandler, null });
 
     
-    clay::setMeasureTextFunction(&clay::renderer::raylibMeasureText);
+    clay::setMeasureTextFunction(&clay::renderer::raylibMeasureText, null);
     clay::renderer::raylibFonts[FONT_ID_BODY_16] = { 
         FONT_ID_BODY_16, 
         rl::loadFontEx("resources/Lexend-Regular.ttf", 48, null, 400)
@@ -95,10 +95,10 @@ fn void main() @public
     // =======================================
     // ===== predeclare reusable configs =====
     // =======================================
-    RectangleElementConfig contentBackgroundConfig = {
-        { 90, 90, 90, 255 },
-        clay::@cornerRadiusUniCT(8)
-    };
+    // RectangleElementConfig contentBackgroundConfig = {
+    //     .backgroundColor={ 90, 90, 90, 255 },
+    //     .cornerRadius= clay::@cornerRadiusUniCT(8),
+    // };
 
     Sizing layoutExpand = (Sizing){ clay::sizingGrow(), clay::sizingGrow() };
 
@@ -112,45 +112,48 @@ fn void main() @public
         Vector2 mouse_position = rl::getMousePosition();
         Vector2 scroll_delta = rl::getMouseWheelMoveV();
         clay::setPointerState({mouse_position.x, mouse_position.y}, rl::isMouseButtonDown(MouseButton.LEFT));
-        clay::updateScrollContainer(true, {scroll_delta.x, scroll_delta.y}, rl::getFrameTime());
+        clay::updateScrollContainers(true, {scroll_delta.x, scroll_delta.y}, rl::getFrameTime());
 
         if (rl::isKeyReleased(rl::KEY_D)) { isDebugModeEnabled = !isDebugModeEnabled; clay::setDebugModeEnabled(isDebugModeEnabled); }
 
         clay::beginLayout();
 
-        @clay(
-            clay::id("OuterContainer"),
-            clay::rectangle({ .color = { 43, 41, 51, 255 } }),
-            clay::layout({
-                .sizing = layoutExpand,
-                .padding = clay::paddingUni(16),
-                .childGap = 16,
-                .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
-            })
+        @clay({
+            .id = clay::id("OuterContainer"),
+            // clay::rectangle({ .color = } }),
+            .backgroundColor = { 43, 41, 51, 255 },
+            //dont need it for this one but rectangle also held this
+            // .cornerRadius = {},
+            // .layout = clay::layout({
+            //     .sizing = layoutExpand,
+            //     .padding = clay::paddingUni(16),
+            //     .childGap = 16,
+            //     .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
+            // })
+            }
         ) {
-            @clay(
-                clay::id("HeaderBar"),
-                clay::rectangle(contentBackgroundConfig),
-                clay::layout({
-                    .sizing = {
-                        .height = clay::sizingFixed(60),
-                        .width = clay::sizingGrow()
-                    },
-                    .padding = { 16, 16, 0, 0 },
-                    .childGap = 16,
-                    .childAlignment = {
-                        .y = AlignY.CENTER
-                    }
-                })
-            ) {
+            @clay({
+                .id = clay::id("HeaderBar"),
+                .backgroundColor = {90,90,90,255},
+                .cornerRadius = clay::@cornerRadiusUniCT(8),
+                // clay::layout({
+                //     .sizing = {
+                //         .height = clay::sizingFixed(60),
+                //         .width = clay::sizingGrow()
+                //     },
+                //     .padding = { 16, 16, 0, 0 },
+                //     .childGap = 16,
+                //     .childAlignment = {
+                //         .y = AlignY.CENTER
+                //     }
+                // })
+            }) {
                 // Header buttons go here
-                @clay(
-                    clay::id("FileButton"),
-                    clay::layout({ .padding = { 16, 16, 8, 8 }}),
-                    clay::rectangle({
-                        .color = { 140, 140, 140, 255 },
-                        .cornerRadius = clay::cornerRadiusUni(5)
-                    })
+                @clay({
+                    .id = clay::id("FileButton"),
+                    // clay::layout({ .padding = { 16, 16, 8, 8 }}),
+                    .backgroundColor = { 140, 140, 140, 255 },
+                    .cornerRadius = clay::cornerRadiusUni(5)}
                 ) {
                     clay::text("File", clay::textConfig({
                         .textColor = { 255, 255, 255, 255 },
@@ -164,28 +167,28 @@ fn void main() @public
                         clay::pointerOver(clay::getElementId("FileMenu"));
 
                     if (fileMenuVisible) { // Below has been changed slightly to fix the small bug where the menu would dismiss when mousing over the top gap
-                        @clay(
-                            clay::id("FileMenu"),
-                            clay::floating({
-                                .attachment = {
-                                    .parent = AttachPoint.LEFT_BOTTOM
-                                },
-                            }),
-                            clay::layout({
-                                .padding = {0, 0, 8, 8 }
-                            })
+                        @clay({
+                            .id = clay::id("FileMenu"),
+                            // .floating = clay::floating({
+                            //     .attachment = {
+                            //         .parent = AttachPoint.LEFT_BOTTOM
+                            //     },
+                            // }),
+                            // clay::layout({
+                            //     .padding = {0, 0, 8, 8 }
+                            // })
+                            }
                         ) {
-                            @clay(
-                                clay::layout({
-                                    .sizing = {
-                                            .width = clay::sizingFixed(200)
-                                    },
-                                    .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
-                                }),
-                                clay::rectangle({
-                                    .color = { 40, 40, 40, 255 },
+                            @clay({
+                                // clay::layout({
+                                //     .sizing = {
+                                //             .width = clay::sizingFixed(200)
+                                //     },
+                                //     .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
+                                // }),
+                                    .backgroundColor = { 40, 40, 40, 255 },
                                     .cornerRadius = clay::cornerRadiusUni(8)
-                                })
+                                }
                             ) {
                                 // Render dropdown items here
                                 renderDropdownMenuItem("New");
@@ -196,39 +199,45 @@ fn void main() @public
                     }
                 };
                 renderHeaderButton("Edit");
-                @clay(clay::layout({ .sizing = { .width = clay::sizingGrow() }})) {};
+                @clay({
+                    // clay::layout({ .sizing = { .width = clay::sizingGrow() }})
+            }) {};
                 renderHeaderButton("Upload");
                 renderHeaderButton("Media");
                 renderHeaderButton("Support");
             };
 
-            @clay(
-                clay::id("LowerContent"),
-                clay::layout({ .sizing = layoutExpand, .childGap = 16 })
+            @clay({
+                .id = clay::id("LowerContent"),
+                // clay::layout({ .sizing = layoutExpand, .childGap = 16 })
+                }
             ) {
-                @clay(
-                    clay::id("Sidebar"),
-                    contentBackgroundConfig,
-                    clay::layout({
-                        .sizing = {
-                            .width = clay::sizingFixed(250),
-                            .height = clay::sizingGrow()
-                        },
-                        .padding = clay::paddingUni(16),
-                        .childGap = 8,
-                        .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
-                    })
+                @clay({
+                    .id = clay::id("Sidebar"),
+                    .backgroundColor={ 90, 90, 90, 255 },
+                    .cornerRadius= clay::@cornerRadiusUniCT(8),
+                    // clay::layout({
+                    //     .sizing = {
+                    //         .width = clay::sizingFixed(250),
+                    //         .height = clay::sizingGrow()
+                    //     },
+                    //     .padding = clay::paddingUni(16),
+                    //     .childGap = 8,
+                    //     .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
+                    // })
+                    }
                 ) {
                     for (int i = 0; i < ALL_DOCUMENTS.len; i++) {
                         Document document = ALL_DOCUMENTS[i];
 
                         if (i == selectedDocumentIndex) {
-                            @clay(
-                                clay::layout(sidebarButtonLayout),
-                                clay::rectangle({
-                                    .color = { 120, 120, 120, 255 },
+                            @clay({
+                                // clay::layout(sidebarButtonLayout),
+                                // clay::rectangle({
+                                    .backgroundColor = { 120, 120, 120, 255 },
                                     .cornerRadius = clay::cornerRadiusUni(8),
-                                })
+                                // })
+                                }
                             ) {
                                 clay::text(document.title, clay::textConfig({
                                     .textColor = { 255, 255, 255, 255 },
@@ -237,37 +246,55 @@ fn void main() @public
                                 }));
                             };
                         } else {
-                            @clay(
-                                clay::layout(sidebarButtonLayout),
-                                clay::onHover(&handleSidebarInteraction, i),
-                                clay::@bodyIf(
-                                    clay::hovered(), 
-                                    clay::rectangle({
-                                        .color = { 120, 120, 120, 120 },
-                                        .cornerRadius = clay::cornerRadiusUni(8)
-                                    })
-                                ),  
-                            ) {
-                                clay::text(document.title, clay::textConfig({
+                            clay::@bodyIf(
+                                clay::hovered(), 
+                                {
+                                    .backgroundColor = { 120, 120, 120, 120 },
+                                    .cornerRadius = clay::cornerRadiusUni(8)
+                                })
+                            {
+                                clay::text(document.title, clay::textConfig(
+                                    {
                                     .textColor = { 255, 255, 255, 255 },
                                     .fontId = FONT_ID_BODY_16,
                                     .fontSize = 20,
-                                }));
+                                    }
+                                ));
                             };
+                            // @clay({
+                            //     // clay::layout(sidebarButtonLayout),
+                            //     // clay::onHover(&handleSidebarInteraction, i),
+                            //     clay::@bodyIf(
+                            //         clay::hovered(), 
+                            //         {
+                            //             .backgroundColor = { 120, 120, 120, 120 },
+                            //             .cornerRadius = clay::cornerRadiusUni(8)
+                            //         }
+                            //     ),  
+                            //     }
+                            // ) {
+                            //     clay::text(document.title, clay::textConfig({
+                            //         .textColor = { 255, 255, 255, 255 },
+                            //         .fontId = FONT_ID_BODY_16,
+                            //         .fontSize = 20,
+                            //     }));
+                            // };
                         }
                     }
                 };
 
-                @clay(
-                    clay::id("MainContent"),
-                    clay::rectangle(contentBackgroundConfig),
-                    clay::scroll({ .vertical = true }),
-                    clay::layout({
-                        .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
-                        .childGap = 14,
-                        .padding = clay::paddingUni(16),
-                        .sizing = layoutExpand,
-                    }),
+                @clay({
+                    .id = clay::id("MainContent"),
+                    .backgroundColor = {90,90,90,255},
+                    .cornerRadius = clay::@cornerRadiusUniCT(8),
+                    // .scroll = clay::scroll({ .vertical = true }),
+                    // clay::layout({
+                    //     .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
+                    //     .childGap = 14,
+                    //     .padding = clay::paddingUni(16),
+                    //     .sizing = layoutExpand,
+                    // }),
+                    }
                 ) {
                     Document document = ALL_DOCUMENTS[selectedDocumentIndex];
                     clay::text(document.title, clay::textConfig({
