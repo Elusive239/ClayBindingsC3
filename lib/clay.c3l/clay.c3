@@ -1,7 +1,6 @@
 module clay;
 
 import clay::carray;
-import clay::wrapped;
 
 
 
@@ -164,7 +163,7 @@ struct ClayStringSlice {
 
 //  Arena
 struct Arena {
-  UptrArray nextAllocation;
+  uptr nextAllocation;
   usz capacity;
   char *memory;
 }
@@ -191,9 +190,9 @@ struct ClayBoundingBox {
 
 //  ElementId
 struct ElementId {
-  UInt32Array id;
-  UInt32Array offset;
-  UInt32Array baseId;
+  CUInt id;
+  CUInt offset;
+  CUInt baseId;
   ClayString stringId;
 }
 
@@ -267,10 +266,6 @@ struct Padding {
   ushort bottom;
 }
 
-// WRAPPER_STRUCT(Clay_Padding)
-// struct PaddingWrapper{    Padding wrapped; }
-alias PaddingWrapper = wrapped::Wrapped{Padding};
-
 //  LayoutConfig
 struct LayoutConfig {
   Sizing sizing;
@@ -279,10 +274,6 @@ struct LayoutConfig {
   ChildAlignment childAlignment;
   LayoutDirection layoutDirection;
 }
-
-// WRAPPER_STRUCT(Clay_LayoutConfig)
-// struct LayoutConfigWrapper{    LayoutConfig wrapped; }
-alias LayoutConfigWrapper = wrapped::Wrapped{LayoutConfig};
 
 //  TextElementConfigWrapMode
 enum TextElementConfigWrapMode: char @export{
@@ -312,29 +303,17 @@ struct  TextElementConfig  {
 // fn usz? TextElementConfig.to_format(&self, Formatter* f) @dynamic
 // => io::struct_to_format(*self, f, false);
 
-// WRAPPER_STRUCT(TextElementConfig)
-// struct TextElementConfigWrapper{    TextElementConfig wrapped; }    ;
-alias TextElementConfigWrapper = wrapped::Wrapped{TextElementConfig};
 
 //  AspectRatioElementConfig
 struct AspectRatioElementConfig {
   float aspectRatio;
 }
 
-// WRAPPER_STRUCT(Clay_AspectRatioElementConfig)
-// struct AspectRatioElementConfigWrapper{    AspectRatioElementConfig wrapped;
-// }
-alias AspectRatioElementConfigWrapper =
-    wrapped::Wrapped{AspectRatioElementConfig};
-
 //  ImageElementConfig
 struct ImageElementConfig {
   void *imageData;
 }
 
-// WRAPPER_STRUCT(Clay_ImageElementConfig)
-// struct ImageElementConfigWrapper{    ImageElementConfig wrapped; }
-alias ImageElementConfigWrapper = wrapped::Wrapped{ImageElementConfig};
 
 //  FloatingAttachPointType
 enum FloatingAttachPointType: char @export{
@@ -379,7 +358,7 @@ enum FloatingClipToElement: char @export{
 struct  FloatingElementConfig {
   ClayVector2 offset;
   Dimensions expand;
-  UInt32Array parentId;
+  CUInt parentId;
   short zIndex;
   FloatingAttachPoints attachPoints;
   PointerCaptureMode pointerCaptureMode;
@@ -387,18 +366,10 @@ struct  FloatingElementConfig {
   FloatingClipToElement clipTo;
 }
 
-// WRAPPER_STRUCT(Clay_FloatingElementConfig)
-// struct FloatingElementConfigWrapper{    FloatingElementConfig wrapped; }
-alias FloatingElementConfigWrapper = wrapped::Wrapped{FloatingElementConfig};
-
 //  CustomElementConfig
 struct CustomElementConfig {
   void *customData;
 }
-
-// WRAPPER_STRUCT(Clay_CustomElementConfig)
-// struct CustomElementConfigWrapper{    CustomElementConfig wrapped; }
-alias CustomElementConfigWrapper = wrapped::Wrapped{CustomElementConfig};
 
 //  ClipElementConfig
 struct ClipElementConfig {
@@ -407,9 +378,6 @@ struct ClipElementConfig {
   ClayVector2 childOffset;
 }
 
-// WRAPPER_STRUCT(Clay_ClipElementConfig)
-// struct ClipElementConfigWrapper{    ClipElementConfig wrapped; }
-alias ClipElementConfigWrapper = wrapped::Wrapped{ClipElementConfig};
 
 //  BorderWidth
 struct BorderWidth {
@@ -425,10 +393,6 @@ struct BorderElementConfig {
   ClayColor color;
   BorderWidth width;
 }
-
-// WRAPPER_STRUCT(Clay_BorderElementConfig)
-// struct BorderElementConfigWrapper{    BorderElementConfig wrapped; }
-alias BorderElementConfigWrapper = wrapped::Wrapped{BorderElementConfig};
 
 //  TextRenderData
 struct TextRenderData {
@@ -515,7 +479,7 @@ struct  RenderCommand {
   ClayBoundingBox boundingBox;
   RenderData renderData;
   void *userData;
-  UInt32Array id;
+  CUInt id;
   short zIndex;
   RenderCommandType commandType;
 }
@@ -549,9 +513,6 @@ struct ElementDeclaration {
   void *userData;
 }
 
-// WRAPPER_STRUCT(Clay_ElementDeclaration)
-// struct ElementDeclarationWrapper{    ElementDeclaration wrapped; }
-alias ElementDeclarationWrapper = wrapped::Wrapped{ElementDeclaration};
 
 //  ErrorType
 enum ErrorType : char @export{
@@ -568,7 +529,7 @@ enum ErrorType : char @export{
 //  ErrorData
 struct  ErrorData {
   ErrorType errorType;
-  String errorText;
+  ClayString errorText;
   void *userData;
 }
 
@@ -595,10 +556,6 @@ struct SharedElementConfig {
   CornerRadius cornerRadius;
   void *userData;
 }
-
-// WRAPPER_STRUCT(Clay_SharedElementConfig)
-// struct SharedElementConfigWrapper {    SharedElementConfig wrapped; }
-alias SharedElementConfigWrapper = wrapped::Wrapped{SharedElementConfig};
 
 // ElementConfigType
 enum ElementConfigType : char @export{
@@ -638,26 +595,29 @@ struct ElementConfig {
 // WrappedTextLine
 struct WrappedTextLine {
   Dimensions dimensions;
-  String line;
+  ClayString line;
 }
 
 // TextElementData
 struct TextElementData {
-  String text;
+  ClayString text;
   Dimensions preferredDimensions;
   CInt elementIndex;
   WrappedTextLineArraySlice wrappedLines;
 }
-///NOTTTT CORRECT
-struct WrappedTextLineArraySlice {
-  WrappedTextLine *wrappedLines;
-  CInt length;
-}
-///NOTTTT CORRECT
-struct ElementConfigArraySlice {
-  ElementConfigArray *wrappedLines;
-  CInt length;
-}
+// ///NOTTTT CORRECT
+// struct WrappedTextLineArraySlice {
+//   WrappedTextLine *wrappedLines;
+//   CInt length;
+// }
+// ///NOTTTT CORRECT
+// struct ElementConfigArraySlice {
+//   ElementConfigArray *wrappedLines;
+//   CInt length;
+// }
+
+alias WrappedTextLineArraySlice = carray::Slice{WrappedTextLineArray};
+alias ElementConfigArraySlice = carray::Slice{ElementConfigArray};
 
 // LayoutElementChildren
 struct LayoutElementChildren {
@@ -674,7 +634,7 @@ struct LayoutElement {
   Dimensions minDimensions;
   LayoutConfig *layoutConfig;
   ElementConfigArraySlice elementConfigs;
-  UInt32Array id;
+  CUInt id;
 }
 
 // ScrollContainerDataInternal
@@ -688,7 +648,7 @@ struct ScrollContainerDataInternal {
   ClayVector2 scrollPosition;
   ClayVector2 previousDelta;
   float momentumTime;
-  UInt32Array elementId;
+  CUInt elementId;
   bool openThisFrame;
   bool pointerScrollActive;
 }
@@ -726,9 +686,9 @@ struct MeasureTextCacheItem {
   CInt measuredWordsStartIndex;
   float minWidth;
   bool containsNewlines;
-  UInt32Array id;
+  CUInt id;
   CInt nextIndex;
-  UInt32Array generation;
+  CUInt generation;
 }
 
 // LayoutElementTreeNode
@@ -741,8 +701,8 @@ struct LayoutElementTreeNode {
 // LayoutElementTreeRoot
 struct LayoutElementTreeRoot {
   CInt layoutElementIndex;
-  UInt32Array parentId;
-  UInt32Array clipElementId;
+  CUInt parentId;
+  CUInt clipElementId;
   short zIndex;
   ClayVector2 pointerOffset;
 }
@@ -755,19 +715,21 @@ struct Context {
   ErrorHandler errorHandler;
   BooleanWarnings booleanWarnings;
   WarningArray warnings;
+
   PointerData pointerInfo;
   Dimensions layoutDimensions;
   ElementId dynamicElementIndexBaseHash;
-  UInt32Array dynamicElementIndex;
+  CUInt dynamicElementIndex;
   bool debugModeEnabled;
   bool disableCulling;
   bool externalScrollHandlingEnabled;
-  UInt32Array debugSelectedElementId;
-  UInt32Array generation;
-  UptrArray arenaResetOffset;
+  CUInt debugSelectedElementId;
+  CUInt generation;
+  uptr arenaResetOffset;
   void *measureTextUserData;
   void *queryScrollOffsetUserData;
   Arena internalArena;
+  // Layout Elements / Render Commands
   LayoutElementArray layoutElements;
   RenderCommandArray renderCommands;
   Int32Array openLayoutElementStack;
@@ -777,6 +739,7 @@ struct Context {
   Int32Array aspectRatioElementIndexes;
   Int32Array reusableElementIndexBuffer;
   Int32Array layoutElementClipElementIds;
+  // Configs
   LayoutConfigArray layoutConfigs;
   ElementConfigArray elementConfigs;
   TextElementConfigArray textElementConfigs;
@@ -787,6 +750,7 @@ struct Context {
   CustomElementConfigArray customElementConfigs;
   BorderElementConfigArray borderElementConfigs;
   SharedElementConfigArray sharedElementConfigs;
+  // Misc Data Structures
   StringArray layoutElementIdStrings;
   WrappedTextLineArray wrappedTextLines;
   LayoutElementTreeNodeArray layoutElementTreeNodeArray1;
@@ -976,12 +940,6 @@ fn ElementType* Slice.get(
     return {};
 }
 
-
-module clay::wrapped{ElementType};
-
-struct Wrapped {
-    ElementType wrapped;
-}
 
 // TODO: extensions to clay.c since our clay::Context alignment appears to be off
 // Clay_PointerData Clay__GetPointerData()

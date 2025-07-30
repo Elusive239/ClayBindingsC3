@@ -399,12 +399,6 @@ fn void raylibRender(RenderCommandArray renderCommands)
                     0,
                     clayToRaylibColor(tintcolor)
                 );
-                // rl::drawTextureEx(
-                // imageTexture,
-                // {boundingBox.x, boundingBox.y},
-                // 0,
-                // boundingBox.width / (float)imageTexture.width,
-                // rl::WHITE);
                 break;
             }
             case RenderCommandType.SCISSOR_START: {
