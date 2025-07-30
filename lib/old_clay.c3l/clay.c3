@@ -2,7 +2,7 @@ module clay;
 
 import clay::carray;
 
-// =======================
+// e===============
 // ===== USER MACROS =====
 // =======================
 macro @clay(...; @body()) @builtin
@@ -574,10 +574,9 @@ struct Context
     bool externalScrollHandlingEnabled;
     uint debugSelectedElementId;
     uint generation;
-    uptr arenaResetOffset;
-    void *measureTextUserData;
-    void *queryScrollOffsetUserData;
+    uint128 arenaResetOffset;
     Arena internalArena;
+
     // Layout Elements / Render Commands
     LayoutElementArray layoutElements;
     RenderCommandArray renderCommands;
@@ -585,19 +584,21 @@ struct Context
     IntArray layoutElementChildren;
     IntArray layoutElementChildrenBuffer;
     TextElementDataArray textElementData;
-    IntArray aspectRatioElementIndexes;
+    LayoutElementPointerArray imageElementPointers;
     IntArray reusableElementIndexBuffer;
     IntArray layoutElementClipElementIds;
+
     // Configs
     LayoutConfigArray layoutConfigs;
+    ElementConfigArray elementConfigBuffer;
     ElementConfigArray elementConfigs;
+    RectangleElementConfigArray rectangleElementConfigs;
     TextElementConfigArray textElementConfigs;
     ImageElementConfigArray imageElementConfigs;
     FloatingElementConfigArray floatingElementConfigs;
-    ClipElementConfigArray clipElementConfigs;
+    ScrollElementConfigArray scrollElementConfigs;
     CustomElementConfigArray customElementConfigs;
     BorderElementConfigArray borderElementConfigs;
-    SharedElementConfigArray sharedElementConfigs;
     
     // Misc Data Structures
     ClayStringArray layoutElementIdStrings;

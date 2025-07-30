@@ -2,7 +2,8 @@ module clay;
 
 import clay::carray;
 
-
+///this is very very bad never do this but im tired boss
+fn void ___chkstk_ms (long size) @export("___chkstk_ms") @if(env::WIN32 && !$defined(___chkstk_ms)) {   }
 
 //clay public api macros
 
