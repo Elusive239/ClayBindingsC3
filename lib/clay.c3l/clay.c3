@@ -605,16 +605,6 @@ struct TextElementData {
   CInt elementIndex;
   WrappedTextLineArraySlice wrappedLines;
 }
-// ///NOTTTT CORRECT
-// struct WrappedTextLineArraySlice {
-//   WrappedTextLine *wrappedLines;
-//   CInt length;
-// }
-// ///NOTTTT CORRECT
-// struct ElementConfigArraySlice {
-//   ElementConfigArray *wrappedLines;
-//   CInt length;
-// }
 
 alias WrappedTextLineArraySlice = carray::Slice{WrappedTextLineArray};
 alias ElementConfigArraySlice = carray::Slice{ElementConfigArray};

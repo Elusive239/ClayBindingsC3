@@ -134,17 +134,17 @@ fn void main() @public
                 .id = clay::id("HeaderBar"),
                 .backgroundColor = {90,90,90,255},
                 .cornerRadius = clay::@cornerRadiusUniCT(8),
-                // clay::layout({
-                //     .sizing = {
-                //         .height = clay::sizingFixed(60),
-                //         .width = clay::sizingGrow()
-                //     },
-                //     .padding = { 16, 16, 0, 0 },
-                //     .childGap = 16,
-                //     .childAlignment = {
-                //         .y = AlignY.CENTER
-                //     }
-                // })
+                .layout = clay::layout({
+                    .sizing = {
+                        .height = clay::sizingFixed(60),
+                        .width = clay::sizingGrow()
+                    },
+                    .padding = { 16, 16, 0, 0 },
+                    .childGap = 16,
+                    .childAlignment = {
+                        .y = LayoutAlignmentY.CENTER
+                    }
+                })
             }) {
                 // Header buttons go here
                 @clay({
