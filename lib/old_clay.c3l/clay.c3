@@ -574,9 +574,10 @@ struct Context
     bool externalScrollHandlingEnabled;
     uint debugSelectedElementId;
     uint generation;
-    uint128 arenaResetOffset;
+    uptr arenaResetOffset;
+    void *measureTextUserData;
+    void *queryScrollOffsetUserData;
     Arena internalArena;
-
     // Layout Elements / Render Commands
     LayoutElementArray layoutElements;
     RenderCommandArray renderCommands;
@@ -584,21 +585,19 @@ struct Context
     IntArray layoutElementChildren;
     IntArray layoutElementChildrenBuffer;
     TextElementDataArray textElementData;
-    LayoutElementPointerArray imageElementPointers;
+    IntArray aspectRatioElementIndexes;
     IntArray reusableElementIndexBuffer;
     IntArray layoutElementClipElementIds;
-
     // Configs
     LayoutConfigArray layoutConfigs;
-    ElementConfigArray elementConfigBuffer;
     ElementConfigArray elementConfigs;
-    RectangleElementConfigArray rectangleElementConfigs;
     TextElementConfigArray textElementConfigs;
     ImageElementConfigArray imageElementConfigs;
     FloatingElementConfigArray floatingElementConfigs;
-    ScrollElementConfigArray scrollElementConfigs;
+    ClipElementConfigArray clipElementConfigs;
     CustomElementConfigArray customElementConfigs;
     BorderElementConfigArray borderElementConfigs;
+    SharedElementConfigArray sharedElementConfigs;
     
     // Misc Data Structures
     ClayStringArray layoutElementIdStrings;
