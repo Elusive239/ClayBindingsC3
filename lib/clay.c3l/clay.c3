@@ -61,10 +61,8 @@ macro sidiLocal(ClayString label, index) => clay::hashStringWithOffset(label, in
 
 // BELOW COMMENT IS NOT ACCURATE WITH C3!
 // Note: If an error led you here, it's because CLAY_STRING can only be used with string literals, i.e. CLAY_STRING("SomeString") and not CLAY_STRING(yourString)
-import std::io;
 
 macro ClayString string(string) {
-  io::printfn("TEXT:{%s}", string);
   return {
     .isStaticallyAllocated = true,
     .length = string.len,
@@ -103,7 +101,7 @@ macro void @bodyIf(bool #condition, ElementDeclaration ifRes; @body()) {
 
 // macro @bodyIfElse(#condition, #ifRes, #elseRes) { if (#condition) { #ifRes; } else { #elseRes; } }
 
-macro ElementDeclaration @bodyIfElse(bool #condition, ElementDeclaration ifRes,  ifFunc, elseIfRes, elseFunc) { 
+macro ElementDeclaration @bodyIfElse(bool #condition, ElementDeclaration ifRes, ifFunc, ElementDeclaration elseIfRes, elseFunc) { 
   if (#condition) {@clay(ifRes){
     ifFunc();
   }; }else {@clay(elseIfRes){
@@ -114,7 +112,7 @@ macro ElementDeclaration @bodyIfElse(bool #condition, ElementDeclaration ifRes, 
 // macro rectangle(RectangleElementConfig config) { clay::attachElementConfig({ .rectangleElementConfig = clay::storeRectangleElementConfig(config) }, clay::ELEMENT_CONFIG_TYPE_RECTANGLE ); }
 
 macro layout(LayoutConfig config) { 
-  clay::attachLayoutConfig( clay::storeLayoutConfig(config) ); 
+  return *clay::storeLayoutConfig(config) ;
 }
 
 // macro scroll(ScrollElementConfig config) { clay::attachElementConfig({ .scrollElementConfig = clay::storeScrollElementConfig(config) }, clay::ELEMENT_CONFIG_TYPE_SCROLL_CONTAINER ); }
@@ -151,48 +149,48 @@ alias MeasureTextFunc = fn Dimensions( ClayStringSlice text, TextElementConfig *
 alias QueryScrollOffsetFunc = fn ClayVector2(CUInt elementId, void *userData);
 
 //  String
-struct ClayString @packed{
+struct ClayString {
   bool isStaticallyAllocated;
   CInt length;
   ZString chars;
 }
 
 //  StringSlice
-struct ClayStringSlice @packed{
+struct ClayStringSlice {
   CInt length;
   char *chars;
   char *baseChars;
 }
 
 //  Arena
-struct Arena @packed{
+struct Arena {
   UptrArray nextAllocation;
   usz capacity;
   char *memory;
 }
 
 //  Dimensions
-struct Dimensions @packed{
+struct Dimensions {
   float width, height;
 }
 
 //  ClayVector2
-struct ClayVector2 @packed{
+struct ClayVector2 {
   float x, y;
 }
 
 //  Color
-struct ClayColor @packed{
+struct ClayColor {
   float r, g, b, a;
 }
 
 //  ClayBoundingBox
-struct ClayBoundingBox @packed{
+struct ClayBoundingBox {
   float x, y, width, height;
 }
 
 //  ElementId
-struct ElementId @packed{
+struct ElementId {
   UInt32Array id;
   UInt32Array offset;
   UInt32Array baseId;
@@ -200,7 +198,7 @@ struct ElementId @packed{
 }
 
 //  CornerRadius
-struct CornerRadius @packed {
+struct CornerRadius  {
   float topLeft;
   float topRight;
   float bottomLeft;
@@ -236,19 +234,19 @@ enum SizingType: char @export{
 }
 
 //  ChildAlignment
-struct  ChildAlignment @packed{
+struct  ChildAlignment {
   LayoutAlignmentX x;
   LayoutAlignmentY y;
 }
 
 //  SizingMinMax
-struct SizingMinMax @packed{
+struct SizingMinMax {
   float min;
   float max;
 }
 
 //  SizingAxis
-struct SizingAxis @packed{
+struct SizingAxis {
   union size {
     SizingMinMax minMax;
     float percent;
@@ -256,13 +254,13 @@ struct SizingAxis @packed{
 }
 
 //  Sizing
-struct Sizing @packed{
+struct Sizing {
   SizingAxis width;
   SizingAxis height;
 }
 
 //  Padding
-struct Padding @packed{
+struct Padding {
   ushort left;
   ushort right;
   ushort top;
@@ -274,7 +272,7 @@ struct Padding @packed{
 alias PaddingWrapper = wrapped::Wrapped{Padding};
 
 //  LayoutConfig
-struct LayoutConfig @packed{
+struct LayoutConfig {
   Sizing sizing;
   Padding padding;
   ushort childGap;
@@ -301,7 +299,7 @@ enum TextAlignment: char @export{
 } 
 
 //  TextElementConfig
-struct  TextElementConfig @packed{
+struct  TextElementConfig  {
   void *userData;
   ClayColor textColor;
   ushort fontId;
@@ -311,13 +309,15 @@ struct  TextElementConfig @packed{
   TextElementConfigWrapMode wrapMode;
   TextAlignment textAlignment;
 }
+// fn usz? TextElementConfig.to_format(&self, Formatter* f) @dynamic
+// => io::struct_to_format(*self, f, false);
 
 // WRAPPER_STRUCT(TextElementConfig)
 // struct TextElementConfigWrapper{    TextElementConfig wrapped; }    ;
 alias TextElementConfigWrapper = wrapped::Wrapped{TextElementConfig};
 
 //  AspectRatioElementConfig
-struct AspectRatioElementConfig @packed{
+struct AspectRatioElementConfig {
   float aspectRatio;
 }
 
@@ -328,7 +328,7 @@ alias AspectRatioElementConfigWrapper =
     wrapped::Wrapped{AspectRatioElementConfig};
 
 //  ImageElementConfig
-struct ImageElementConfig @packed{
+struct ImageElementConfig {
   void *imageData;
 }
 
@@ -350,7 +350,7 @@ enum FloatingAttachPointType: char @export{
 }
 
 //  FloatingAttachPoints
-struct  FloatingAttachPoints @packed{
+struct  FloatingAttachPoints {
   FloatingAttachPointType element;
   FloatingAttachPointType parent;
 }   
@@ -376,7 +376,7 @@ enum FloatingClipToElement: char @export{
 } 
 
 //  FloatingElementConfig
-struct  FloatingElementConfig @packed{
+struct  FloatingElementConfig {
   ClayVector2 offset;
   Dimensions expand;
   UInt32Array parentId;
@@ -392,7 +392,7 @@ struct  FloatingElementConfig @packed{
 alias FloatingElementConfigWrapper = wrapped::Wrapped{FloatingElementConfig};
 
 //  CustomElementConfig
-struct CustomElementConfig @packed{
+struct CustomElementConfig {
   void *customData;
 }
 
@@ -401,7 +401,7 @@ struct CustomElementConfig @packed{
 alias CustomElementConfigWrapper = wrapped::Wrapped{CustomElementConfig};
 
 //  ClipElementConfig
-struct ClipElementConfig @packed{
+struct ClipElementConfig {
   bool horizontal;
   bool vertical;
   ClayVector2 childOffset;
@@ -412,7 +412,7 @@ struct ClipElementConfig @packed{
 alias ClipElementConfigWrapper = wrapped::Wrapped{ClipElementConfig};
 
 //  BorderWidth
-struct BorderWidth @packed{
+struct BorderWidth {
   ushort left;
   ushort right;
   ushort top;
@@ -421,7 +421,7 @@ struct BorderWidth @packed{
 }
 
 //  BorderElementConfig
-struct BorderElementConfig @packed{
+struct BorderElementConfig {
   ClayColor color;
   BorderWidth width;
 }
@@ -431,7 +431,7 @@ struct BorderElementConfig @packed{
 alias BorderElementConfigWrapper = wrapped::Wrapped{BorderElementConfig};
 
 //  TextRenderData
-struct TextRenderData @packed{
+struct TextRenderData {
   ClayStringSlice stringContents;
   ClayColor textColor;
   ushort fontId;
@@ -441,33 +441,33 @@ struct TextRenderData @packed{
 }
 
 //  RectangleRenderData
-struct RectangleRenderData @packed{
+struct RectangleRenderData {
   ClayColor backgroundColor;
   CornerRadius cornerRadius;
 }
 
 //  ImageRenderData
-struct ImageRenderData @packed{
+struct ImageRenderData {
   ClayColor backgroundColor;
   CornerRadius cornerRadius;
   void *imageData;
 }
 
 //  CustomRenderData
-struct CustomRenderData @packed{
+struct CustomRenderData {
   ClayColor backgroundColor;
   CornerRadius cornerRadius;
   void *customData;
 }
 
 //  ClipRenderData
-struct ClipRenderData @packed{
+struct ClipRenderData {
   bool horizontal;
   bool vertical;
 }
 
 //  BorderRenderData
-struct BorderRenderData @packed{
+struct BorderRenderData {
   ClayColor color;
   CornerRadius cornerRadius;
   BorderWidth width;
@@ -484,7 +484,7 @@ union RenderData {
 }
 
 //  ScrollContainerData
-struct ScrollContainerData @packed{
+struct ScrollContainerData {
   ClayVector2 *scrollPosition;
   Dimensions scrollContainerDimensions;
   Dimensions contentDimensions;
@@ -493,7 +493,7 @@ struct ScrollContainerData @packed{
 }
 
 //  ElementData
-struct ElementData @packed{
+struct ElementData {
   ClayBoundingBox boundingBox;
   bool found;
 }
@@ -511,7 +511,7 @@ enum RenderCommandType : char @export{
 }
 
 //  RenderCommand
-struct  RenderCommand @packed{
+struct  RenderCommand {
   ClayBoundingBox boundingBox;
   RenderData renderData;
   void *userData;
@@ -529,13 +529,13 @@ enum PointerState: char @export{
 } 
 
 //  PointerData
-struct  PointerData @packed{
+struct  PointerData {
   ClayVector2 position;
   PointerState state;
 }
 
 //  ElementDeclaration
-struct ElementDeclaration @packed{
+struct ElementDeclaration {
   ElementId id;
   LayoutConfig layout;
   ClayColor backgroundColor;
@@ -566,14 +566,14 @@ enum ErrorType : char @export{
 } 
 
 //  ErrorData
-struct  ErrorData @packed{
+struct  ErrorData {
   ErrorType errorType;
   String errorText;
   void *userData;
 }
 
 //  ErrorHandler
-struct ErrorHandler @packed{
+struct ErrorHandler {
   ErrorHandleFunc errorHandlerFunction;
   // void (*errorHandlerFunction)(Clay_ErrorData errorText);
   void *userData;
@@ -584,13 +584,13 @@ struct ErrorHandler @packed{
 // ...and so on for each type used in arrays
 
 // Warning
-struct Warning @packed{
+struct Warning {
   String baseMessage;
   String dynamicMessage;
 }
 
 //  SharedElementConfig
-struct SharedElementConfig @packed{
+struct SharedElementConfig {
   ClayColor backgroundColor;
   CornerRadius cornerRadius;
   void *userData;
@@ -626,7 +626,7 @@ union ElementConfigUnion{
 }
 
 //  ElementConfig
-struct ElementConfig @packed{
+struct ElementConfig {
   ElementConfigType type;
   ElementConfigUnion config;
 }
@@ -636,37 +636,37 @@ struct ElementConfig @packed{
 // *internalArray; } ;
 
 // WrappedTextLine
-struct WrappedTextLine @packed{
+struct WrappedTextLine {
   Dimensions dimensions;
   String line;
 }
 
 // TextElementData
-struct TextElementData @packed{
+struct TextElementData {
   String text;
   Dimensions preferredDimensions;
   CInt elementIndex;
   WrappedTextLineArraySlice wrappedLines;
 }
 ///NOTTTT CORRECT
-struct WrappedTextLineArraySlice @packed{
+struct WrappedTextLineArraySlice {
   WrappedTextLine *wrappedLines;
   CInt length;
 }
 ///NOTTTT CORRECT
-struct ElementConfigArraySlice @packed{
+struct ElementConfigArraySlice {
   ElementConfigArray *wrappedLines;
   CInt length;
 }
 
 // LayoutElementChildren
-struct LayoutElementChildren @packed{
+struct LayoutElementChildren {
   CInt *elements;
   ushort length;
 }
 
 //  LayoutElement
-struct LayoutElement @packed{
+struct LayoutElement {
   union childrenOrTextContent {
     LayoutElementChildren children;
     TextElementData *textElementData;
@@ -678,7 +678,7 @@ struct LayoutElement @packed{
 }
 
 // ScrollContainerDataInternal
-struct ScrollContainerDataInternal @packed{
+struct ScrollContainerDataInternal {
   LayoutElement *layoutElement;
   ClayBoundingBox boundingBox;
   Dimensions contentSize;
@@ -694,13 +694,13 @@ struct ScrollContainerDataInternal @packed{
 }
 
 // DebugElementData
-struct DebugElementData @packed{
+struct DebugElementData {
   bool collision;
   bool collapsed;
 }
 
 //  LayoutElementHashMapItem
-struct LayoutElementHashMapItem @packed{
+struct LayoutElementHashMapItem {
     ClayBoundingBox boundingBox;
     ElementId elementId;
     LayoutElement* layoutElement;
@@ -713,7 +713,7 @@ struct LayoutElementHashMapItem @packed{
 }
 
 // MeasuredWord
-struct MeasuredWord @packed{
+struct MeasuredWord {
   CInt startOffset;
   CInt length;
   float width;
@@ -721,7 +721,7 @@ struct MeasuredWord @packed{
 }
 
 // MeasureTextCacheItem
-struct MeasureTextCacheItem @packed{
+struct MeasureTextCacheItem {
   Dimensions unwrappedDimensions;
   CInt measuredWordsStartIndex;
   float minWidth;
@@ -732,14 +732,14 @@ struct MeasureTextCacheItem @packed{
 }
 
 // LayoutElementTreeNode
-struct LayoutElementTreeNode @packed{
+struct LayoutElementTreeNode {
   LayoutElement *layoutElement;
   ClayVector2 position;
   ClayVector2 nextChildOffset;
 }
 
 // LayoutElementTreeRoot
-struct LayoutElementTreeRoot @packed{
+struct LayoutElementTreeRoot {
   CInt layoutElementIndex;
   UInt32Array parentId;
   UInt32Array clipElementId;
@@ -748,7 +748,7 @@ struct LayoutElementTreeRoot @packed{
 }
 
 //  Context (full definition)
-struct Context @packed{
+struct Context {
   CInt maxElementCount;
   CInt maxMeasureTextCacheWordCount;
   bool warningsEnabled;
@@ -806,17 +806,17 @@ struct Context @packed{
   DebugElementDataArray debugElementData;
 }
 
-struct RenderDebugLayoutData @packed{
+struct RenderDebugLayoutData {
     CInt rowCount;
     CInt selectedElementRowIndex;
 }
 
-struct DebugElementConfigTypeLabelConfig @packed{
+struct DebugElementConfigTypeLabelConfig {
     ClayString label;
     ClayColor color;
 }
 
-struct BooleanWarnings @packed{
+struct BooleanWarnings {
     bool maxElementsExceeded;
     bool maxRenderCommandsExceeded;
     bool maxTextMeasureCacheExceeded;

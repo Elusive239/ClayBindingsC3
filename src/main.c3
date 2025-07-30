@@ -50,6 +50,14 @@ fn void main()
 
         clay::beginLayout();
 		//
+        @clay({
+            .layout = clay::layout({
+
+            }),
+            .backgroundColor = {100, 100, 100 , 255}
+        }) {
+
+        };
 		RenderCommandArray renderCommands = clay::endLayout();
 
         rl::beginDrawing();

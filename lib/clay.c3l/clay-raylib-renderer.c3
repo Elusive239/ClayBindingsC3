@@ -315,6 +315,8 @@ fn Ray getScreenToWorldPointWithZDistance(Vector2 position, Camera camera, int s
 //   ClayStringSlice text, 
 // TextElementConfig *config, void *userData);
 import std::io;
+
+
 fn Dimensions raylibMeasureText(ClayStringSlice text, TextElementConfig *config, void* userData)
 {
     // Measure string size for Font
@@ -326,6 +328,7 @@ fn Dimensions raylibMeasureText(ClayStringSlice text, TextElementConfig *config,
     int lineCharCount = 0;
 
     float textHeight = config.fontSize;
+    // io::printfn("Config: %s", *config);
     Font fontToUse = raylibFonts[config.fontId].font;
     if(!fontToUse.glyphs){
         fontToUse = rl::getFontDefault();
@@ -378,13 +381,30 @@ fn void raylibRender(RenderCommandArray renderCommands)
                 break;
             }
             case RenderCommandType.IMAGE: {
+
                 Texture2D imageTexture = *(Texture2D *)renderCommand.renderData.image.imageData;
-                rl::drawTextureEx(
-                imageTexture,
-                {boundingBox.x, boundingBox.y},
-                0,
-                boundingBox.width / (float)imageTexture.width,
-                rl::WHITE);
+                ClayColor tintcolor = renderCommand.renderData.image.backgroundColor;
+                if(tintcolor.r == 0 &&
+                    tintcolor.g == 0 &&
+                    tintcolor.b == 0 &&
+                    tintcolor.a == 0 
+                ){
+                    tintcolor = {255, 255, 255, 255};
+                }
+                rl::drawTexturePro(
+                    imageTexture, 
+                    (Rectangle) {0,0,imageTexture.width, imageTexture.height},
+                    (Rectangle) {boundingBox.x,boundingBox.y,boundingBox.width, boundingBox.height},
+                    (Vector2) {},
+                    0,
+                    clayToRaylibColor(tintcolor)
+                );
+                // rl::drawTextureEx(
+                // imageTexture,
+                // {boundingBox.x, boundingBox.y},
+                // 0,
+                // boundingBox.width / (float)imageTexture.width,
+                // rl::WHITE);
                 break;
             }
             case RenderCommandType.SCISSOR_START: {
@@ -407,34 +427,38 @@ fn void raylibRender(RenderCommandArray renderCommands)
             }
             case RenderCommandType.BORDER: {
                 BorderRenderData *config = &renderCommand.renderData.border;
+                
+                ClayColor color = config.color;
+                CornerRadius cornerRadius = config.cornerRadius;
+                BorderWidth width = config.width;
                 // // Left border
-                // if (config.left.width > 0) {
-                //     rl::drawRectangle((int)$$round(boundingBox.x), (int)$$round(boundingBox.y + config.cornerRadius.topLeft), (int)config.left.width, (int)$$round(boundingBox.height - config.cornerRadius.topLeft - config.cornerRadius.bottomLeft), clayToRaylibColor(config.left.color));
-                // }
-                // // Right border
-                // if (config.right.width > 0) {
-                //     rl::drawRectangle((int)$$round(boundingBox.x + boundingBox.width - config.right.width), (int)$$round(boundingBox.y + config.cornerRadius.topRight), (int)config.right.width, (int)$$round(boundingBox.height - config.cornerRadius.topRight - config.cornerRadius.bottomRight), clayToRaylibColor(config.right.color));
-                // }
-                // // Top border
-                // if (config.top.width > 0) {
-                //     rl::drawRectangle((int)$$round(boundingBox.x + config.cornerRadius.topLeft), (int)$$round(boundingBox.y), (int)$$round(boundingBox.width - config.cornerRadius.topLeft - config.cornerRadius.topRight), (int)config.top.width, clayToRaylibColor(config.top.color));
-                // }
-                // // Bottom border
-                // if (config.bottom.width > 0) {
-                //     rl::drawRectangle((int)$$round(boundingBox.x + config.cornerRadius.bottomLeft), (int)$$round(boundingBox.y + boundingBox.height - config.bottom.width), (int)$$round(boundingBox.width - config.cornerRadius.bottomLeft - config.cornerRadius.bottomRight), (int)config.bottom.width, clayToRaylibColor(config.bottom.color));
-                // }
-                // if (config.cornerRadius.topLeft > 0) {
-                //     rl::drawRing({ $$round(boundingBox.x + config.cornerRadius.topLeft), $$round(boundingBox.y + config.cornerRadius.topLeft) }, $$round(config.cornerRadius.topLeft - config.top.width), config.cornerRadius.topLeft, 180, 270, 10, clayToRaylibColor(config.top.color));
-                // }
-                // if (config.cornerRadius.topRight > 0) {
-                //     rl::drawRing({ $$round(boundingBox.x + boundingBox.width - config.cornerRadius.topRight), $$round(boundingBox.y + config.cornerRadius.topRight) }, $$round(config.cornerRadius.topRight - config.top.width), config.cornerRadius.topRight, 270, 360, 10, clayToRaylibColor(config.top.color));
-                // }
-                // if (config.cornerRadius.bottomLeft > 0) {
-                //     rl::drawRing({ $$round(boundingBox.x + config.cornerRadius.bottomLeft), $$round(boundingBox.y + boundingBox.height - config.cornerRadius.bottomLeft) }, $$round(config.cornerRadius.bottomLeft - config.top.width), config.cornerRadius.bottomLeft, 90, 180, 10, clayToRaylibColor(config.bottom.color));
-                // }
-                // if (config.cornerRadius.bottomRight > 0) {
-                //     rl::drawRing({ $$round(boundingBox.x + boundingBox.width - config.cornerRadius.bottomRight), $$round(boundingBox.y + boundingBox.height - config.cornerRadius.bottomRight) }, $$round(config.cornerRadius.bottomRight - config.bottom.width), config.cornerRadius.bottomRight, 0.1, 90, 10, clayToRaylibColor(config.bottom.color));
-                // }
+                if (width.left > 0) {
+                    rl::drawRectangle((int)$$round(boundingBox.x), (int)$$round(boundingBox.y + cornerRadius.topLeft), (int)width.left, (int)$$round(boundingBox.height - cornerRadius.topLeft - cornerRadius.bottomLeft), clayToRaylibColor(color));
+                }
+                // Right border
+                if (width.right > 0) {
+                    rl::drawRectangle((int)$$round(boundingBox.x + boundingBox.width - width.right), (int)$$round(boundingBox.y + cornerRadius.topRight), (int)width.right, (int)$$round(boundingBox.height - cornerRadius.topRight - cornerRadius.bottomRight), clayToRaylibColor(color));
+                }
+                // Top border
+                if (width.top > 0) {
+                    rl::drawRectangle((int)$$round(boundingBox.x + cornerRadius.topLeft), (int)$$round(boundingBox.y), (int)$$round(boundingBox.width - cornerRadius.topLeft - cornerRadius.topRight), (int)width.top, clayToRaylibColor(color));
+                }
+                // Bottom border
+                if (width.bottom > 0) {
+                    rl::drawRectangle((int)$$round(boundingBox.x + cornerRadius.bottomLeft), (int)$$round(boundingBox.y + boundingBox.height - width.bottom), (int)$$round(boundingBox.width -cornerRadius.bottomLeft - cornerRadius.bottomRight), (int)width.bottom, clayToRaylibColor(color));
+                }
+                if (cornerRadius.topLeft > 0) {
+                    rl::drawRing({ $$round(boundingBox.x + cornerRadius.topLeft), $$round(boundingBox.y + cornerRadius.topLeft) }, $$round(cornerRadius.topLeft - width.top), cornerRadius.topLeft, 180, 270, 10, clayToRaylibColor(color));
+                }
+                if (cornerRadius.topRight > 0) {
+                    rl::drawRing({ $$round(boundingBox.x + boundingBox.width - cornerRadius.topRight), $$round(boundingBox.y + cornerRadius.topRight) }, $$round(cornerRadius.topRight - width.top), cornerRadius.topRight, 270, 360, 10, clayToRaylibColor(color));
+                }
+                if (cornerRadius.bottomLeft > 0) {
+                    rl::drawRing({ $$round(boundingBox.x + cornerRadius.bottomLeft), $$round(boundingBox.y + boundingBox.height - cornerRadius.bottomLeft) }, $$round(cornerRadius.bottomLeft - width.top), cornerRadius.bottomLeft, 90, 180, 10, clayToRaylibColor(color));
+                }
+                if (cornerRadius.bottomRight > 0) {
+                    rl::drawRing({ $$round(boundingBox.x + boundingBox.width - cornerRadius.bottomRight), $$round(boundingBox.y + boundingBox.height - cornerRadius.bottomRight) }, $$round(cornerRadius.bottomRight - width.bottom), cornerRadius.bottomRight, 0.1, 90, 10, clayToRaylibColor(color));
+                }
                 break;
             }
             case RenderCommandType.CUSTOM: {

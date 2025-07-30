@@ -120,16 +120,14 @@ fn void main() @public
 
         @clay({
             .id = clay::id("OuterContainer"),
-            // clay::rectangle({ .color = } }),
             .backgroundColor = { 43, 41, 51, 255 },
             //dont need it for this one but rectangle also held this
-            // .cornerRadius = {},
-            // .layout = clay::layout({
-            //     .sizing = layoutExpand,
-            //     .padding = clay::paddingUni(16),
-            //     .childGap = 16,
-            //     .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
-            // })
+            .layout = clay::layout({
+                .sizing = layoutExpand,
+                .padding = clay::paddingUni(16),
+                .childGap = 16,
+                .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
+            })
             }
         ) {
             @clay({
