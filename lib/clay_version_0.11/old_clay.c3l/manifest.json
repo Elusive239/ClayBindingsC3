@@ -1,4 +1,5 @@
 { 
+  // "authors": [ "Jefferey Schlueter <jefferey.l.schlueter@gmail.com>"],
   "provides" : "clay",
   "c-sources":["csource/clay.c"],
   "dependencies" : ["raylib55"],

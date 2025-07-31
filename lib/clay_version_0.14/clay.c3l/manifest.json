@@ -1,7 +1,7 @@
 { 
-  "provides" : "old_clay",
+  "provides" : "clay",
   "c-sources":["csource/clay.c"],
-  "dependencies" : ["raylib55"],
+  "dependencies" : [],
   "cflags": "-DCLAY_IMPLEMENTATION",
   "sources": ["clay.c3", "clay-raylib-renderer.c3"],
   "targets" : {

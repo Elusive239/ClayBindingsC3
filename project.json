@@ -1,31 +1,32 @@
 {
   "langrev": "6.6",
-  "authors":  [ "Jefferey Schlueter <jefferey.l.schlueter@gmail.com>" ],
+  "authors":  [ "Elusive239 <github.com/Elusive239>" ],
   "version": "0.1.0",
-  "dependency-search-paths":  [ "lib" ], // has to be out here for vendor-fetch to put it in the right place
+  "dependency-search-paths":  [ "lib", "shared-lib"], // has to be out here for vendor-fetch to put it in the right place
   "cc": "gcc",
   "targets": {
     // TODO: compiling with clang gives "-fPic" not valid commands for windows target
     "main": {
       "output": "build/main",
+      "dependency-search-paths":  [ "shared-lib",  "lib/clay_version_0.14"], 
       "dependencies":  [ "raylib55", "clay" ],
       "sources": [ "src/main.c3" ],
       "type": "executable",
-      // "true": "full"
     },
     "new-example": {
       "output": "build/new-example/",
+      "dependency-search-paths":  [ "shared-lib",  "lib/clay_version_0.14"], 
       "dependencies":  [ "raylib55", "clay" ],
       "type": "executable",
       "sources": [ "src/updated-video-example.c3" ],
     },
     "old-example": {
-      "dependencies":  [ "raylib55", "old_clay" ],
+      "dependency-search-paths":  [ "shared-lib", "lib/clay_version_0.11"], 
+      "dependencies":  [ "raylib55", "clay" ],
       "output": "build/old-example/",
       "type": "executable",
       "sources": [ "src/video-example.c3" ],
     }
-
   },
 
   "cpu": "generic"
