@@ -208,7 +208,7 @@ fn void main() @public
             ) {
                 @clay(
                     clay::id("Sidebar"),
-                    contentBackgroundConfig,
+                    clay::rectangle(contentBackgroundConfig),
                     clay::layout({
                         .sizing = {
                             .width = clay::sizingFixed(250),
