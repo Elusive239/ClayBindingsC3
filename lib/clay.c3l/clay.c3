@@ -82,17 +82,12 @@ macro floating(FloatingElementConfig config) {
   return *clay::storeFloatingElementConfig(config);
 }
 
-macro borderRadiusUni(uint width, ClayColor color, float cornerRadius = 0) { 
-  return clay::attachElementConfig(
-    { .borderElementConfig = clay::storeBorderElementConfig({ .left = { width, color }, .right = { width, color }, .top = { width, color }, .bottom = { width, color }, .cornerRadius = {cornerRadius, cornerRadius, cornerRadius, cornerRadius}})}, clay::ELEMENT_CONFIG_TYPE_BORDER_CONTAINER); }
 
 macro TextElementConfig* textConfig(TextElementConfig config) { return clay::storeTextElementConfig(config); }
 
 macro Padding paddingUni(ushort uniform) { return {uniform, uniform, uniform, uniform}; }
 
 macro Padding padding(ushort horizontal, ushort vertical) { return {horizontal, horizontal, vertical, vertical}; }
-
-macro CornerRadius cornerRadiusUni(float uniform) { return {uniform, uniform, uniform, uniform}; }
 
 macro SizingAxis sizingFitCT(float $min = 0, float $max = float.max) { return { .size.minMax = {$min, $max}, .type = SizingType.FIT }; }
 

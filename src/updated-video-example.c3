@@ -27,7 +27,7 @@ fn void renderHeaderButton(String text) {
     @clay({
             .layout = clay::layout({ .padding = { 16, 16, 8, 8 }}),
             .backgroundColor = { 140, 140, 140, 255 },
-            .cornerRadius = clay::cornerRadiusUni(5)
+            .cornerRadius = clay:: @cornerRadiusUniCT(5)
         }
     ) {
         clay::text(text, clay::textConfig({
@@ -132,7 +132,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                 .id = clay::id("FileButton"),
                 .layout= clay::layout({ .padding = { 16, 16, 8, 8 }}),
                 .backgroundColor = { 140, 140, 140, 255 },
-                .cornerRadius = clay::cornerRadiusUni(5)}
+                .cornerRadius = clay:: @cornerRadiusUniCT(5)}
             ) {
                 clay::text("File", clay::textConfig({
                     .fontId = FONT_ID_BODY_16,
@@ -165,7 +165,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                                 },
                             }),
                                 .backgroundColor = { 40, 40, 40, 255 },
-                                .cornerRadius = clay::cornerRadiusUni(8)
+                                .cornerRadius = clay:: @cornerRadiusUniCT(8)
                             }
                         ) {
                             // Render dropdown items here
@@ -214,7 +214,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                         @clay({
                                 .layout = clay::layout(sidebarButtonLayout),
                                 .backgroundColor = { 120, 120, 120, 255 },
-                                .cornerRadius = clay::cornerRadiusUni(8),
+                                .cornerRadius = clay:: @cornerRadiusUniCT(8),
                             }
                         ) {
                             clay::text(document.title, clay::textConfig({
@@ -234,7 +234,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                             {
                             .layout =  sidebarButtonLayout,
                             .backgroundColor = { 120, 120, 120, clay::hovered() ? 120 : 0 },
-                            .cornerRadius = clay::cornerRadiusUni(8)
+                            .cornerRadius = clay:: @cornerRadiusUniCT(8)
                             }
                         ){
                             clay::onHover(&handleSidebarInteraction, (iptr) clickData);
