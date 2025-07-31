@@ -23,7 +23,7 @@ to view the original [video_demo](https://youtu.be/DYWTw19_8r4?si=aByPTxXC0sSKJJ
 c3c run old-example   
 ```
 
-to see the original demo rewritten in Clay 0.14 bindings (the new ones).
+to see the original demo rewritten in Clay 0.14 bindings (the new ones):
 ```
 c3c run new-example   
 ```
@@ -33,6 +33,8 @@ To try and just get an all black window popup (baseline), in case something is r
 c3c run main
 ```   
 or `c3c run`
+
+You can also press `D` in any of the above builds to enable clays debug window!
 
 > [!WARNING]  
 > This probably isn't finished yet, but it's usable! Changes will be made on new releases of Clay... when I get to them!
