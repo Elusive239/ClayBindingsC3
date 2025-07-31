@@ -10,10 +10,6 @@ fn void ___chkstk_ms (long size) @export("___chkstk_ms") @if(env::WIN32 && !$def
 macro max(x, y) => (((x) > (y)) ? (x) : (y));
 macro min(x, y) => (((x) < (y)) ? (x) : (y));
 
-// macro TextElementConfig textConfig(...) { 
-//   return {$vasplat};
-// }
-
 macro borderOutside(widthValue) => {widthValue, widthValue, widthValue, widthValue, 0};
 
 macro borderAll(widthValue) => {widthValue, widthValue, widthValue, widthValue, 0};
@@ -39,19 +35,19 @@ macro SizingAxis sizingPercent(percentOfParent) {
 }
 
 // Note: If a compile error led you here, you might be trying to use CLAY_ID with something other than a string literal. To construct an ID with a dynamic string, use CLAY_SID instead.
-macro id(String label) => clay::sid(clay::string(label));
+macro id( label) => clay::sid(clay::string(label));
 macro sid(ClayString label) => clay::hashString(label, 0);
 
 // Note: If a compile error led you here, you might be trying to use CLAY_IDI with something other than a string literal. To construct an ID with a dynamic string, use CLAY_SIDI instead.
-macro idi(String label, index) => clay::sidi(clay::string(label), index);
+macro idi( label, index) => clay::sidi(clay::string(label), index);
 macro sidi(ClayString label, index) => clay::hashStringWithOffset(label, index, 0);
 
 // Note: If a compile error led you here, you might be trying to use CLAY_ID_LOCAL with something other than a string literal. To construct an ID with a dynamic string, use CLAY_SID_LOCAL instead.
-macro idLocal(String label) => clay::sidLocal(clay::string(label));
+macro idLocal( label) => clay::sidLocal(clay::string(label));
 macro sidLocal(ClayString label, index) => clay::hashString(label, getParentElementId());
 
 // Note: If a compile error led you here, you might be trying to use CLAY_ID_LOCAL with something other than a string literal. To construct an ID with a dynamic string, use CLAY_SID_LOCAL instead.
-macro idiLocal(String label, index) => clay::sidiLocal(clay::string(label), index);
+macro idiLocal( label, index) => clay::sidiLocal(clay::string(label), index);
 macro sidiLocal(ClayString label, index) => clay::hashStringWithOffset(label, index, getParentElementId());
 
 macro ClayString string(string) {
@@ -60,14 +56,15 @@ macro ClayString string(string) {
     $case ZString.typeid:     return { .isStaticallyAllocated = true, .length = string.len(), .chars = string };
     //Dstring *arent* typically statically allocated, but we dont want clay to try and yeet it.
     $case DString.typeid:     return { .isStaticallyAllocated = true, .length = string.len(), .chars = (ZString) &string.str_view()[0] };
+    //If the original ClayString isn't statically allocated, we assume itll be deallocated after we're done with it (and not here).
     $case ClayString.typeid:  return { .isStaticallyAllocated = true, .length = string.length,.chars = string.chars};
     $default : unreachable("Unsupported string type for clay::string.");
   $endswitch
 }
 
-macro void @clay(ElementDeclaration decl; @body()) @builtin { 
+macro void @clay(ElementDeclaration #decl; @body()) @builtin { 
   clay::openElement();
-  configureOpenElement( decl);
+  configureOpenElement( #decl);
   @body();
   clay::closeElement();
 }
@@ -77,31 +74,9 @@ macro void text( text, TextElementConfig* textConfig) {
   clay::openTextElement(clay::string(text), textConfig);
 }
 
-// alias IfConditionFn = fn void();
-
-macro void @bodyIf(bool #condition, ElementDeclaration ifRes; @body()) { 
-  if (#condition) @clay(ifRes){
-    @body();
-  }; 
-}
-
-// macro @bodyIfElse(#condition, #ifRes, #elseRes) { if (#condition) { #ifRes; } else { #elseRes; } }
-
-macro ElementDeclaration @bodyIfElse(bool #condition, ElementDeclaration ifRes, ifFunc, ElementDeclaration elseIfRes, elseFunc) { 
-  if (#condition) {@clay(ifRes){
-    ifFunc();
-  }; }else {@clay(elseIfRes){
-    elseFunc();
-  };}
-}
-
-// macro rectangle(RectangleElementConfig config) { clay::attachElementConfig({ .rectangleElementConfig = clay::storeRectangleElementConfig(config) }, clay::ELEMENT_CONFIG_TYPE_RECTANGLE ); }
-
 macro layout(LayoutConfig config) { 
   return *clay::storeLayoutConfig(config) ;
 }
-
-// macro scroll(ScrollElementConfig config) { clay::attachElementConfig({ .scrollElementConfig = clay::storeScrollElementConfig(config) }, clay::ELEMENT_CONFIG_TYPE_SCROLL_CONTAINER ); }
 
 macro floating(FloatingElementConfig config) { 
   return *clay::storeFloatingElementConfig(config);

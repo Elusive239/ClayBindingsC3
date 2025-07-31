@@ -192,7 +192,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
             @clay({
                 .id = clay::id("Sidebar"),
                 .backgroundColor={ 90, 90, 90, 255 },
-                // .cornerRadius= clay::@cornerRadiusUniCT(8),
+                .cornerRadius= clay::@cornerRadiusUniCT(8),
                 .layout = clay::layout({
                     .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
                     .padding = clay::paddingAll(16),
@@ -230,12 +230,13 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                             .selectedDocumentIndex = &data.selectedDocumentIndex
                         };
                         data.arena.offset += SidebarClickData.sizeof;
-                        // clay::hovered(), 
-                        @clay( {
-                                .layout =  sidebarButtonLayout,
-                                .backgroundColor = { 120, 120, 120, clay::hovered() ? 120 : 0 },
-                                .cornerRadius = clay::cornerRadiusUni(8)
-                            }) {
+                        @clay(
+                            {
+                            .layout =  sidebarButtonLayout,
+                            .backgroundColor = { 120, 120, 120, clay::hovered() ? 120 : 0 },
+                            .cornerRadius = clay::cornerRadiusUni(8)
+                            }
+                        ){
                             clay::onHover(&handleSidebarInteraction, (iptr) clickData);
                             clay::text(document.title, clay::textConfig({
                                 .textColor = { 255, 255, 255, 255 },
@@ -285,6 +286,18 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
 
 fn void main() @public
 {    
+
+    // @clay({
+    //     .clip = {
+    //         .vertical = true,
+    //         .childOffset = clay::getScrollOffset(), // This function is context dependent and will automatically track scrolling for this element across frames
+    //     }
+    // }){
+        
+    // };
+
+
+
     renderer::raylibInitialize(
         1024, 768, "Introducing Clay C3-Demo",
         (uint) (rl::FLAG_VSYNC_HINT | rl::FLAG_WINDOW_RESIZABLE | rl::FLAG_WINDOW_HIGHDPI | rl::FLAG_MSAA_4X_HINT)
@@ -304,7 +317,7 @@ fn void main() @public
         TextureFilter.BILINEAR
     );
     clay::setMeasureTextFunction(&clay::renderer::raylibMeasureText, null);
-
+    // clay::setQueryScrollOffsetFunction(QueryScrollOffsetFunc func, void *userData)
     VideoDemoData demo = *(VideoDemoData){}.init();
 
     while (!rl::windowShouldClose()) {

@@ -366,7 +366,7 @@ fn void raylibRender(RenderCommandArray renderCommands)
     for (int j = 0; j < renderCommands.length; j++)
     {
         RenderCommand *renderCommand = renderCommands.get(j);
-        ClayBoundingBox boundingBox = renderCommand.boundingBox;
+        ClayBoundingBox boundingBox = {(int)$$round(renderCommand.boundingBox.x), (int)$$round(renderCommand.boundingBox.y), (int)$$round(renderCommand.boundingBox.width), (int)$$round(renderCommand.boundingBox.height)};
         switch (renderCommand.commandType)
         {
             case RenderCommandType.TEXT: {
