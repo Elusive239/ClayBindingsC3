@@ -1,6 +1,6 @@
 # *New* Clay bindings for C3
 
-C3 Bindings, working for version 0.7.3 of C3 & version 0.14 of Clay.
+C3 Bindings, working for version 0.7.3 of C3 & version 0.14 of [Clay](https://github.com/nicbarker/clay).
 
 ## To Use:
 
@@ -9,11 +9,12 @@ C3 Bindings, working for version 0.7.3 of C3 & version 0.14 of Clay.
 3. Currently bindings rely on Raylib for the raylib renderer, so vendor-fetch "raylib55" (will add other renderers at some point).
 - `c3c vendor-fetch raylib55`
 4. Put the downloaded Clay bindings in your projects 'lib' folder. That's whatever folder raylib ended up in.
-- `"dependency-search-paths":  [ "lib"],`
-5. Add "clay" to your project.json (again, same place as raylib).
-- `"dependencies":  [ "raylib55", "clay" ],`
-6. import Clay! 
-- `import clay;`
+5. Add "clay" to your project.json (again, same place as raylib). should end up looking something like below:
+```JSON
+"dependency-search-paths":  [ "lib"],
+"dependencies":  [ "raylib55", "clay" ],
+```
+6. Now you can import Clay! 
 
 ## For this repo
 
