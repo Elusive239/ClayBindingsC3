@@ -12,8 +12,7 @@ macro max(x, y) => (((x) > (y)) ? (x) : (y));
 macro min(x, y) => (((x) < (y)) ? (x) : (y));
 
 
-macro BorderWidth @borderUni(#widthValue) => {#widthValue, #widthValue, #widthValue, #widthValue, 0};
-
+macro BorderWidth @borderUni(ushort #widthValue) => {#widthValue, #widthValue, #widthValue, #widthValue, 0};
 
 macro SizingAxis @sizingFit(SizingMinMax #minmax = {}) {
   return { .size = { .minMax = { #minmax } }, .type = SizingType.FIT };
