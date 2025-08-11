@@ -12,7 +12,7 @@ fn void errorHandler(ErrorData errorData)
 
 fn void renderDropdownMenuItem(String text) {
     @clay(
-        { .layout = clay::layout({ .padding = clay::paddingUni(16)})}
+        { .layout = clay::layout({ .padding = clay::@paddingUni(16)})}
     ) {
         clay::text(
             text, clay::textConfig({
@@ -95,7 +95,7 @@ fn VideoDemoData* VideoDemoData.init(&this) {
 fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
     data.arena.offset = 0;
     clay::beginLayout();
-    Sizing layoutExpand = (Sizing){ clay::sizingGrow(), clay::sizingGrow() };
+    Sizing layoutExpand = (Sizing){ clay::@sizingGrow(), clay::@sizingGrow() };
     ClayColor contentBackgroundColor = {90,90,90,255};
 
     //STUFF TO RENDER
@@ -106,7 +106,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
         .layout = clay::layout({
             .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
             .sizing = layoutExpand,
-            .padding = clay::paddingUni(16),
+            .padding = clay::@paddingUni(16),
             .childGap = 16,
         })
         }
@@ -115,8 +115,8 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
             .id = clay::id("HeaderBar"),
             .layout = clay::layout({
                 .sizing = {
-                    .height = clay::sizingFixed(60),
-                    .width = clay::sizingGrow()
+                    .height = clay::@sizingFixed(60),
+                    .width = clay::@sizingGrow()
                 },
                 .padding = { 16, 16, 0, 0 },
                 .childGap = 16,
@@ -161,7 +161,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                             .layout =  clay::layout({
                                 .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
                                 .sizing = {
-                                        .width = clay::sizingFixed(200)
+                                        .width = clay::@sizingFixed(200)
                                 },
                             }),
                                 .backgroundColor = { 40, 40, 40, 255 },
@@ -178,7 +178,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
             };
             renderHeaderButton("Edit");
             @clay({
-                .layout =   clay::layout({ .sizing = { .width = clay::sizingGrow() }})
+                .layout =   clay::layout({ .sizing = { .width = clay::@sizingGrow() }})
             }) {};
             renderHeaderButton("Upload");
             renderHeaderButton("Media");
@@ -195,11 +195,11 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                 .cornerRadius= clay::@cornerRadiusUniCT(8),
                 .layout = clay::layout({
                     .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
-                    .padding = clay::paddingAll(16),
+                    .padding = clay::@paddingUni(16),
                     .childGap = 8,
                     .sizing = {
-                        .width = clay::sizingFixed(250),
-                        .height = clay::sizingGrow()
+                        .width = clay::@sizingFixed(250),
+                        .height = clay::@sizingGrow()
                     },
                 })
                 }
@@ -207,8 +207,8 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                 for (int i = 0; i < documents.len; i++) {
                     Document* document = &documents[i];
                     LayoutConfig sidebarButtonLayout = {
-                        .sizing = { .width = clay::sizingGrow() },
-                        .padding = clay::paddingAll(16)
+                        .sizing = { .width = clay::@sizingGrow() },
+                        .padding = clay::@paddingUni(16)
                     };
                     if (i == data.selectedDocumentIndex) {
                         @clay({
@@ -255,7 +255,7 @@ fn RenderCommandArray VideoDemoData.createLayout( VideoDemoData* data) {
                 .layout =  clay::layout({
                     .layoutDirection = LayoutDirection.TOP_TO_BOTTOM,
                     .childGap = 14,
-                    .padding = clay::paddingUni(16),
+                    .padding = clay::@paddingUni(16),
                     .sizing = layoutExpand,
                 }),
                 }

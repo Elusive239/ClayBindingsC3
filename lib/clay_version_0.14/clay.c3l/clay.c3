@@ -1,37 +1,34 @@
+module clay @if(env::WIN32);
+///this is very very bad never do this but im tired boss
+fn void ___chkstk_ms (long size) @export("___chkstk_ms") @if(!$defined(___chkstk_ms)) {   }
+
 module clay;
 
 import clay::carray;
-
-///this is very very bad never do this but im tired boss
-fn void ___chkstk_ms (long size) @export("___chkstk_ms") @if(env::WIN32 && !$defined(___chkstk_ms)) {   }
 
 //clay public api macros
 
 macro max(x, y) => (((x) > (y)) ? (x) : (y));
 macro min(x, y) => (((x) < (y)) ? (x) : (y));
 
-macro borderOutside(widthValue) => {widthValue, widthValue, widthValue, widthValue, 0};
 
-macro borderAll(widthValue) => {widthValue, widthValue, widthValue, widthValue, 0};
+macro BorderWidth @borderUni(#widthValue) => {#widthValue, #widthValue, #widthValue, #widthValue, 0};
 
-macro CornerRadius cornerRadius(radius) => {radius, radius, radius, radius};
 
-macro Padding paddingAll(ushort padding) => {padding, padding, padding, padding};
-
-macro SizingAxis sizingFit(...) {
-  return { .size = { .minMax = { $vasplat } }, .type = SizingType.FIT };
+macro SizingAxis @sizingFit(SizingMinMax #minmax = {}) {
+  return { .size = { .minMax = { #minmax } }, .type = SizingType.FIT };
 }
 
-macro SizingAxis sizingGrow(...) {
-  return { .size = { .minMax = { $vasplat } }, .type = SizingType.GROW };
+macro SizingAxis @sizingGrow(float #a = 0, float #b = 0) {
+  return { .size = { .minMax = { #a, #b} }, .type = SizingType.GROW };
 }
 
-macro SizingAxis sizingFixed(fixedSize) {
-  return { .size = { .minMax = { fixedSize, fixedSize} }, .type = SizingType.FIXED };
+macro SizingAxis @sizingFixed(float #fixedSize = 0) {
+  return { .size = { .minMax = { #fixedSize, #fixedSize} }, .type = SizingType.FIXED };
 }
 
-macro SizingAxis sizingPercent(percentOfParent) {
-  return { .size = { .percent = percentOfParent }, .type = SizingType.FIXED };
+macro SizingAxis @sizingPercent(float #percentOfParent) {
+  return { .size = { .percent = #percentOfParent }, .type = SizingType.PERCENT };
 }
 
 // Note: If a compile error led you here, you might be trying to use CLAY_ID with something other than a string literal. To construct an ID with a dynamic string, use CLAY_SID instead.
@@ -43,21 +40,21 @@ macro idi( label, index) => clay::sidi(clay::string(label), index);
 macro sidi(ClayString label, index) => clay::hashStringWithOffset(label, index, 0);
 
 // Note: If a compile error led you here, you might be trying to use CLAY_ID_LOCAL with something other than a string literal. To construct an ID with a dynamic string, use CLAY_SID_LOCAL instead.
-macro idLocal( label) => clay::sidLocal(clay::string(label));
+macro idLocal( label) => clay::sidLocal(clay::string(label), 0);
 macro sidLocal(ClayString label, index) => clay::hashString(label, getParentElementId());
 
 // Note: If a compile error led you here, you might be trying to use CLAY_ID_LOCAL with something other than a string literal. To construct an ID with a dynamic string, use CLAY_SID_LOCAL instead.
 macro idiLocal( label, index) => clay::sidiLocal(clay::string(label), index);
 macro sidiLocal(ClayString label, index) => clay::hashStringWithOffset(label, index, getParentElementId());
 
-macro ClayString string(string) {
+macro ClayString string(string, bool isStaticallyAllocated = true) {
   $switch $typeof(string).typeid :
-    $case String.typeid:      return { .isStaticallyAllocated = true, .length = string.len,   .chars = (ZString) string.ptr };
-    $case ZString.typeid:     return { .isStaticallyAllocated = true, .length = string.len(), .chars = string };
+    $case String.typeid:      return { .isStaticallyAllocated = isStaticallyAllocated, .length = string.len,   .chars = (ZString) string.ptr };
+    $case ZString.typeid:     return { .isStaticallyAllocated = isStaticallyAllocated, .length = (CInt) string.len(), .chars = string };
     //Dstring *arent* typically statically allocated, but we dont want clay to try and yeet it.
-    $case DString.typeid:     return { .isStaticallyAllocated = true, .length = string.len(), .chars = (ZString) &string.str_view()[0] };
+    $case DString.typeid:     return { .isStaticallyAllocated = isStaticallyAllocated, .length = (CInt) string.len(), .chars = (ZString) &string.str_view()[0] };
     //If the original ClayString isn't statically allocated, we assume itll be deallocated after we're done with it (and not here).
-    $case ClayString.typeid:  return { .isStaticallyAllocated = true, .length = string.length,.chars = string.chars};
+    $case ClayString.typeid:  return string;
     $default : unreachable("Unsupported string type for clay::string.");
   $endswitch
 }
@@ -82,20 +79,19 @@ macro floating(FloatingElementConfig config) {
   return *clay::storeFloatingElementConfig(config);
 }
 
-
 macro TextElementConfig* textConfig(TextElementConfig config) { return clay::storeTextElementConfig(config); }
 
-macro Padding paddingUni(ushort uniform) { return {uniform, uniform, uniform, uniform}; }
+macro Padding @paddingUni(ushort #uniform) { return {#uniform, #uniform, #uniform, #uniform}; }
 
-macro Padding padding(ushort horizontal, ushort vertical) { return {horizontal, horizontal, vertical, vertical}; }
+macro Padding @padding(ushort #horizontal, ushort #vertical) { return {#horizontal, #horizontal, #vertical, #vertical}; }
 
-macro SizingAxis sizingFitCT(float $min = 0, float $max = float.max) { return { .size.minMax = {$min, $max}, .type = SizingType.FIT }; }
+macro SizingAxis @sizingFitCT(float #min = 0, float #max = float.max) { return { .size.minMax = {#min, #max}, .type = SizingType.FIT }; }
 
-macro SizingAxis sizingFixedCT(float $pixels) { return { .size.minMax = {$pixels, $pixels}, .type = SizingType.FIXED }; }
+macro SizingAxis @sizingFixedCT(float #pixels) { return { .size.minMax = {#pixels, #pixels}, .type = SizingType.FIXED }; }
 
-macro SizingAxis sizingPercentCT(float $percent) { return { .size.percent = $percent, .type = SizingType.PERCENT }; }
+macro SizingAxis @sizingPercentCT(float #percent) { return { .size.percent = #percent, .type = SizingType.PERCENT }; }
 
-macro Padding paddingCT(ushort $a, ushort $b, ushort $c, ushort $d) { return { $a, $b, $c, $d }; }
+macro Padding @paddingCT(ushort #a, ushort #b, ushort #c, ushort #d) { return { #a, #b, #c, #d }; }
 
 macro CornerRadius @cornerRadiusUniCT(float #uniform) { return {#uniform, #uniform, #uniform, #uniform}; }
 
@@ -501,9 +497,6 @@ struct ErrorHandler {
   void *userData;
 }
 
-// Many array types are generated by macros, e.g.:
-
-// ...and so on for each type used in arrays
 
 // Warning
 struct Warning {
@@ -518,18 +511,6 @@ struct SharedElementConfig {
   void *userData;
 }
 
-// ElementConfigType
-// enum ElementConfigType : (inline char) @export{
-//     NONE,
-//     BORDER,
-//     FLOATING,
-//     CLIP,
-//     ASPECT,
-//     IMAGE,
-//     TEXT,
-//     CUSTOM,
-//     SHARED,
-// } 
 typedef ElementConfigType                                       = char;
 const ElementConfigType ELEMENT_CONFIG_TYPE_NONE                = 0;
 const ElementConfigType ELEMENT_CONFIG_TYPE_BORDER              = 1;
@@ -888,14 +869,6 @@ struct Array {
     ElementType *data;
 }
 
-// fn ElementType* Array.get(
-//     Array* array,
-//     int index
-//   ) @if(!$defined(Array.get)) {
-//     if(clay::array_RangeCheck(index, slice.length)) return &(array.internalArray[index]) ;
-//     return {};
-// }
-
 struct Slice {
   CInt length;
   ElementType *internalArray;
@@ -909,14 +882,3 @@ fn ElementType* Slice.get(
     return {};
 }
 
-
-// TODO: extensions to clay.c since our clay::Context alignment appears to be off
-// Clay_PointerData Clay__GetPointerData()
-// {
-//     return Clay_GetCurrentContext()->pointerInfo;
-// }
-
-// Clay_LayoutElementArray* Clay__GetLayoutElementArrayFromContext()
-// {
-//     return &Clay_GetCurrentContext()->layoutElements;
-// }
